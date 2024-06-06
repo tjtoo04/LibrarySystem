@@ -70,8 +70,13 @@ class DBConnect
     }
 
     //Insert statement
-    public void Insert()
+    public void Insert(string query)
     {
+        if (this.OpenConnection() == true){
+            MySqlCommand mySqlCommand= new MySqlCommand(query, connection);
+            mySqlCommand.ExecuteNonQuery();
+            this.CloseConnection();
+        }
     }
 
     //Update statement
@@ -85,22 +90,41 @@ class DBConnect
     }
 
     //Select statement
-    public List <string> [] Select()
-    {
-    }
+public List< string >[] Select()
+{
+    string query = "SELECT * FROM tableinfo";
 
-    //Count statement
-    public int Count()
-    {
-    }
+    //Create a list to store the result
+    List<string>[] list = [[], [], []];
 
-    //Backup
-    public void Backup()
-    {
-    }
+        //Open connection
+        if (this.OpenConnection() == true){
+        //Create Command
+            MySqlCommand mySqlCommand = new MySqlCommand(query, connection);
+            //Create a data reader and Execute the command
+            MySqlDataReader dataReader = mySqlCommand.ExecuteReader();
+            
+            //Read the data and store them in the list
+            while (dataReader.Read())
+            {
+                list[0].Add(dataReader["id"] + "");
+                list[1].Add(dataReader["name"] + "");
+                list[2].Add(dataReader["age"] + "");
+            }
 
-    //Restore
-    public void Restore()
+            //close Data Reader
+            dataReader.Close();
+
+            //close Connection
+            this.CloseConnection();
+
+            //return list to be displayed
+            return list;
+        }
+    else
     {
+        return list;
     }
+}
+
 }
