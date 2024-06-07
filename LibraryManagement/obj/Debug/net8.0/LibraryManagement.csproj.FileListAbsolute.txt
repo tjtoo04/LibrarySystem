@@ -38,3 +38,4 @@ C:\GitHub Projects\LibrarySystem\LibraryManagement\bin\Debug\net8.0\runtimes\win
 C:\GitHub Projects\LibrarySystem\LibraryManagement\bin\Debug\net8.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
 C:\GitHub Projects\LibrarySystem\LibraryManagement\obj\Debug\net8.0\LibraryManagement.csproj.AssemblyReference.cache
 C:\GitHub Projects\LibrarySystem\LibraryManagement\obj\Debug\net8.0\LibraryM.685EF3B5.Up2Date
+C:\GitHub Projects\LibrarySystem\LibraryManagement\obj\Debug\net8.0\LibraryManagement.sourcelink.json

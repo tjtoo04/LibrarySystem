@@ -1,130 +1,141 @@
 using MySql.Data.MySqlClient;
-class DBConnect
-{
-    private MySqlConnection connection;
-    private string server;
-    private string database;
-    private string uid;
-    private string password;
+using System.Collections.Generic;
+using System.Collections;
+using Mysqlx.Resultset;
 
-    //Constructor
-    public DBConnect()
+namespace DatabaseConnector{
+    public class DBConnect
     {
-        Initialize();
-    }
+        private MySqlConnection connection;
+        private string server;
+        private string database;
+        private string uid;
+        private string password;
 
-    //Initialize values
-    private void Initialize()
-    {
-        server = "localhost";
-        database = "librarymanagement";
-        uid = "root";
-        password = "";
-        string connectionString;
-        connectionString = "SERVER=" + server + ";" + "DATABASE=" + 
-		database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
-
-        connection = new MySqlConnection(connectionString);
-    }
-
-    //open connection to database
-    private bool OpenConnection()
-    {
-        try{
-            connection.Open();
-            return true;
-    }
-    catch (MySqlException ex)
-    {
-        //When handling errors, you can your application's response based 
-        //on the error number.
-        //The two most common error numbers when connecting are as follows:
-        //0: Cannot connect to server.
-        //1045: Invalid user name and/or password.
-        switch (ex.Number)
+        //Constructor
+        public DBConnect()
         {
-            case 0:
-                Console.WriteLine("Error");
-                break;
-
-            case 1045:
-                Console.WriteLine("Invalid username/password, please try again");
-                break;
+            Initialize();
         }
-        return false;
-    }
-    }
 
-    //Close connection
-    private bool CloseConnection()
-    {
-        try{
-            connection.Close();
-            return true;
-    }
-    catch (MySqlException ex)
-    {
-        Console.WriteLine(ex.Message);
-        return false;
-    }
-    }
+        //Initialize values
+        private void Initialize()
+        {
+            server = "localhost";
+            database = "librarymanagement";
+            uid = "root";
+            password = "";
+            string connectionString;
+            connectionString = "SERVER=" + server + ";" + "DATABASE=" + 
+            database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
 
-    //Insert statement
-    public void Insert(string query)
-    {
-        if (this.OpenConnection() == true){
-            MySqlCommand mySqlCommand= new MySqlCommand(query, connection);
-            mySqlCommand.ExecuteNonQuery();
-            this.CloseConnection();
+            connection = new MySqlConnection(connectionString);
         }
-    }
 
-    //Update statement
-    public void Update()
-    {
-    }
-
-    //Delete statement
-    public void Delete()
-    {
-    }
-
-    //Select statement
-public List< string >[] Select()
-{
-    string query = "SELECT * FROM tableinfo";
-
-    //Create a list to store the result
-    List<string>[] list = [[], [], []];
-
-        //Open connection
-        if (this.OpenConnection() == true){
-        //Create Command
-            MySqlCommand mySqlCommand = new MySqlCommand(query, connection);
-            //Create a data reader and Execute the command
-            MySqlDataReader dataReader = mySqlCommand.ExecuteReader();
-            
-            //Read the data and store them in the list
-            while (dataReader.Read())
+        //open connection to database
+        private bool OpenConnection()
+        {
+            try{
+                connection.Open();
+                return true;
+        }
+        catch (MySqlException ex)
+        {
+            //When handling errors, you can your application's response based 
+            //on the error number.
+            //The two most common error numbers when connecting are as follows:
+            //0: Cannot connect to server.
+            //1045: Invalid user name and/or password.
+            switch (ex.Number)
             {
-                list[0].Add(dataReader["id"] + "");
-                list[1].Add(dataReader["name"] + "");
-                list[2].Add(dataReader["age"] + "");
+                case 0:
+                    Console.WriteLine("Error");
+                    break;
+
+                case 1045:
+                    Console.WriteLine("Invalid username/password, please try again");
+                    break;
             }
-
-            //close Data Reader
-            dataReader.Close();
-
-            //close Connection
-            this.CloseConnection();
-
-            //return list to be displayed
-            return list;
+            return false;
         }
-    else
+        }
+
+        //Close connection
+        private bool CloseConnection()
+        {
+            try{
+                connection.Close();
+                return true;
+        }
+        catch (MySqlException ex)
+        {
+            Console.WriteLine(ex.Message);
+            return false;
+        }
+        }
+
+        //Insert statement
+        public void Insert(string query)
+        {
+            if (this.OpenConnection() == true){
+                MySqlCommand mySqlCommand= new MySqlCommand(query, connection);
+                mySqlCommand.ExecuteNonQuery();
+                this.CloseConnection();
+            }
+        }
+
+        //Update statement
+        public void Update()
+        {
+        }
+
+        //Delete statement
+        public void Delete()
+        {
+        }
+
+        //Select statement
+    public Dictionary<int, Dictionary<string, string>> Select(string query, List<string> searchFields)
     {
-        return list;
+        //Create a list to store the result
+        Dictionary<int, Dictionary<string, string>> data = new Dictionary<int, Dictionary<string, string>>();
+        Dictionary<string, string> entries = new Dictionary<string, string>();
+
+            //Open connection
+            if (this.OpenConnection() == true){
+            //Create Command
+                MySqlCommand mySqlCommand = new MySqlCommand(query, connection);
+
+                //Create a data reader and Execute the command
+                MySqlDataReader dataReader = mySqlCommand.ExecuteReader();
+                
+
+                //Read the data and store them in the list
+                    int i = 0;
+                    while (dataReader.Read()){
+                        data.Add(i, new Dictionary<string, string>());
+                        foreach (var item in searchFields)
+                        {   
+                            data[i].Add(item, dataReader[item].ToString());
+                        }
+                        i++;
+                    }
+                    
+                //close Data Reader
+                dataReader.Close();
+
+                //close Connection
+                this.CloseConnection();
+
+                //return list to be displayed
+                return data;
+            }
+        else
+        {
+            return data;
+        }
     }
-}
+
+    }
 
 }
